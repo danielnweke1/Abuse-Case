@@ -1,0 +1,21 @@
+[
+  { "id": "V1.1.1", "name": "Secure Software Development Lifecycle Architecture" },
+  { "id": "V2.1.1", "name": "Verify that all authentication credentials are treated as sensitive data" },
+  { "id": "V2.2.1", "name": "Verify that passwords are at least 12 characters with no maximum length" },
+  { "id": "V2.5.1", "name": "Verify that password reset mechanisms do not reveal existing users" },
+  { "id": "V3.1.1", "name": "Verify that session tokens are generated using a cryptographically secure pseudo-random number generator" },
+  { "id": "V3.4.1", "name": "Verify that session tokens are revoked upon logout" },
+  { "id": "V4.1.1", "name": "Verify that access controls are enforced on a trusted service layer" },
+  { "id": "V4.1.3", "name": "Verify principle of least privilege is applied across roles" },
+  { "id": "V4.2.1", "name": "Verify that sensitive data and APIs are protected against IDOR / direct object reference" },
+  { "id": "V5.1.1", "name": "Verify that the application validates all input against an allowlist" },
+  { "id": "V5.3.1", "name": "Verify that parameterized queries or ORMs are used to prevent injection" },
+  { "id": "V6.2.1", "name": "Verify that all cryptographic modules use industry-accepted algorithms" },
+  { "id": "V8.1.1", "name": "Verify that error handling does not leak stack traces or debug information" },
+  { "id": "V9.1.1", "name": "Verify that TLS is enforced on all connections" },
+  { "id": "V10.1.1", "name": "Verify that business logic state transitions cannot be skipped or tampered" },
+  { "id": "V11.1.1", "name": "Verify business logic rate limits, concurrency guards, and replay protections" },
+  { "id": "V12.1.1", "name": "Verify that file uploads validate file extensions, MIME types, and magic bytes" },
+  { "id": "V13.1.1", "name": "Verify API inputs are validated and authenticated prior to execution" },
+  { "id": "V14.2.1", "name": "Verify third-party components are kept up to date and scanned for known CVEs" }
+]

@@ -1,0 +1,21 @@
+[
+  { "id": "CAPEC-1", "name": "Accessing Functionality Not Properly Constrained by ACLs" },
+  { "id": "CAPEC-22", "name": "Exploiting Trust in Client (Client-Side Security Controls)" },
+  { "id": "CAPEC-24", "name": "Filter Failure through Buffer Overflow" },
+  { "id": "CAPEC-63", "name": "Cross-Site Scripting (XSS)" },
+  { "id": "CAPEC-66", "name": "SQL Injection" },
+  { "id": "CAPEC-88", "name": "Password Replay" },
+  { "id": "CAPEC-115", "name": "Authentication Bypass" },
+  { "id": "CAPEC-126", "name": "Command Injection" },
+  { "id": "CAPEC-130", "name": "Excessive Allocation" },
+  { "id": "CAPEC-151", "name": "Identity Spoofing" },
+  { "id": "CAPEC-180", "name": "Exploiting Incorrectly Configured Access Control Security Levels" },
+  { "id": "CAPEC-210", "name": "Abuse of Functionality" },
+  { "id": "CAPEC-214", "name": "Fuzzing for Logic Flaws" },
+  { "id": "CAPEC-267", "name": "Leverage Alternate Encoding" },
+  { "id": "CAPEC-383", "name": "Harvesting Token / Cookie Information" },
+  { "id": "CAPEC-461", "name": "Web Parameter Tampering" },
+  { "id": "CAPEC-594", "name": "Traffic Injection" },
+  { "id": "CAPEC-650", "name": "Upload of Malicious Files" },
+  { "id": "CAPEC-664", "name": "Server-Side Request Forgery" }
+]

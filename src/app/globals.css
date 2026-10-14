@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Neutral Dark Theme (Default) */
+  --bg-app: #0e1117;
+  --bg-sidebar: #131720;
+  --bg-surface: #181d28;
+  --bg-surface-elevated: #202634;
+  --bg-hover: #262d3d;
+  --bg-input: #12151d;
+
+  --border-subtle: #242b3b;
+  --border-strong: #323b50;
+
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #646f7f;
+  --text-inverse: #0e1117;
+
+  /* Restrained Accent (Steel / Slate Blue) */
+  --accent-base: #4a72b2;
+  --accent-hover: #5d84c6;
+  --accent-surface: #1e293b;
+  --accent-text: #93b5ea;
+
+  /* Strict Severity Tokens */
+  --severity-critical-bg: #40151a;
+  --severity-critical-border: #80232a;
+  --severity-critical-text: #ff858d;
+
+  --severity-high-bg: #3d2311;
+  --severity-high-border: #7c441a;
+  --severity-high-text: #ffa26b;
+
+  --severity-medium-bg: #382d10;
+  --severity-medium-border: #725b1b;
+  --severity-medium-text: #f5d166;
+
+  --severity-low-bg: #133120;
+  --severity-low-border: #1f6439;
+  --severity-low-text: #69d58d;
+
+  --severity-info-bg: #1c2638;
+  --severity-info-border: #35476a;
+  --severity-info-text: #8fb1e8;
+
+  /* Radii & Spacing */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
+
+[data-theme="light"] {
+  --bg-app: #f6f8fa;
+  --bg-sidebar: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f0f3f6;
+  --bg-hover: #e9eef4;
+  --bg-input: #ffffff;
+
+  --border-subtle: #d0d7de;
+  --border-strong: #afb8c1;
+
+  --text-primary: #1f2328;
+  --text-secondary: #656d76;
+  --text-muted: #8c959f;
+  --text-inverse: #ffffff;
+
+  --accent-base: #2e5999;
+  --accent-hover: #1f4276;
+  --accent-surface: #edf3fc;
+  --accent-text: #1d4ed8;
+
+  --severity-critical-bg: #ffebe9;
+  --severity-critical-border: #ff8182;
+  --severity-critical-text: #cf222e;
+
+  --severity-high-bg: #fff1e5;
+  --severity-high-border: #ffaf7a;
+  --severity-high-text: #bc4c00;
+
+  --severity-medium-bg: #fff8c5;
+  --severity-medium-border: #d4a72c;
+  --severity-medium-text: #9a6700;
+
+  --severity-low-bg: #dafbe1;
+  --severity-low-border: #4ac26b;
+  --severity-low-text: #1a7f37;
+
+  --severity-info-bg: #ddf4ff;
+  --severity-info-border: #54aeff;
+  --severity-info-text: #0969da;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.45;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-xs);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Button & Input Base Styles */
+button {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+button:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent-base);
+  border-color: var(--accent-base);
+  color: #ffffff;
+}
+
+button.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+button.subtle {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+
+button.subtle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+input, textarea, select {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent-base);
+}
+
+/* Dense Data Tables */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+th {
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  user-select: none;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: var(--bg-hover);
+}
+
+tr.selected td {
+  background: var(--accent-surface);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.badge-critical {
+  background: var(--severity-critical-bg);
+  border: 1px solid var(--severity-critical-border);
+  color: var(--severity-critical-text);
+}
+
+.badge-high {
+  background: var(--severity-high-bg);
+  border: 1px solid var(--severity-high-border);
+  color: var(--severity-high-text);
+}
+
+.badge-medium {
+  background: var(--severity-medium-bg);
+  border: 1px solid var(--severity-medium-border);
+  color: var(--severity-medium-text);
+}
+
+.badge-low {
+  background: var(--severity-low-bg);
+  border: 1px solid var(--severity-low-border);
+  color: var(--severity-low-text);
+}
+
+.badge-info {
+  background: var(--severity-info-bg);
+  border: 1px solid var(--severity-info-border);
+  color: var(--severity-info-text);
+}
+
+.badge-neutral {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}

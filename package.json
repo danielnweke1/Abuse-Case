@@ -1,0 +1,33 @@
+{
+  "name": "abuse-case",
+  "version": "1.0.0",
+  "description": "Threat modelling workbench for security professionals",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "npx tsx tests/schema_validation.test.ts && npx tsx tests/stride_validation.test.ts && npx tsx tests/cve_integrity.test.ts && npx tsx tests/business_logic_validation.test.ts && npx tsx tests/risk_register_validation.test.ts",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.12.0",
+    "better-sqlite3": "^11.5.0",
+    "drizzle-orm": "^0.35.3",
+    "lucide-react": "^0.453.0",
+    "next": "^14.2.15",
+    "openai": "^4.68.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^20.17.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "drizzle-kit": "^0.26.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "systemName": "OmniPay Payment Gateway",
+  "overview": "OmniPay is a multi-tenant B2B payment orchestration platform deployed on AWS ECS handling transaction ledgers, tokenized cards, and merchant integrations.",
+  "entities": [
+    {
+      "id": "ENT-01",
+      "name": "Merchant Portal User",
+      "type": "user",
+      "description": "Authenticated business merchant accessing portal dashboard",
+      "trustDomain": "External / Public Internet"
+    },
+    {
+      "id": "ENT-02",
+      "name": "Stripe Settlement API",
+      "type": "third_party_service",
+      "description": "External payment gateway for card processing and tokenization",
+      "trustDomain": "Third Party Cloud"
+    }
+  ],
+  "processes": [
+    {
+      "id": "PROC-01",
+      "name": "Next.js Merchant Dashboard",
+      "tech": "Next.js 14",
+      "trustDomain": "DMZ / Public Edge",
+      "description": "Serves merchant user interface and proxies API requests"
+    },
+    {
+      "id": "PROC-02",
+      "name": "Core Payment API Service",
+      "tech": "Go (Gin)",
+      "trustDomain": "Internal VPC / Private Subnet",
+      "description": "Handles payment validation, HMAC auth, and database orchestration"
+    }
+  ],
+  "dataStores": [
+    {
+      "id": "STORE-01",
+      "name": "Aurora PostgreSQL Cluster",
+      "tech": "PostgreSQL 15",
+      "dataClasses": ["PII", "Tokenized Financial Cards", "Ledgers"],
+      "encryptedAtRest": true
+    },
+    {
+      "id": "STORE-02",
+      "name": "Redis Session & Rate Limiting Cluster",
+      "tech": "Redis 7",
+      "dataClasses": ["Session Tokens", "Rate Limit Buckets"],
+      "encryptedAtRest": null
+    }
+  ],
+  "dataFlows": [
+    {
+      "id": "FLOW-01",
+      "sourceId": "ENT-01",
+      "targetId": "PROC-01",
+      "protocol": "HTTPS",
+      "dataTransferred": "Merchant credentials, session cookies",
+      "crossesBoundaryId": "BOUNDARY-01"
+    },
+    {
+      "id": "FLOW-02",
+      "sourceId": "PROC-01",
+      "targetId": "PROC-02",
+      "protocol": "mTLS / HTTPS",
+      "dataTransferred": "Merchant API requests with JWT",
+      "crossesBoundaryId": "BOUNDARY-02"
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "BOUNDARY-01",
+      "name": "Public Internet to Edge DMZ",
+      "type": "internet_dmz",
+      "elementIds": ["ENT-01", "PROC-01"]
+    },
+    {
+      "id": "BOUNDARY-02",
+      "name": "DMZ to Internal VPC Subnet",
+      "type": "dmz_internal",
+      "elementIds": ["PROC-01", "PROC-02"]
+    }
+  ],
+  "assets": [
+    {
+      "id": "ASSET-01",
+      "name": "Customer Payment Card Tokens",
+      "classification": "restricted",
+      "criticalityReason": "Cardholder data breach triggers severe PCI-DSS non-compliance and financial liabilities"
+    },
+    {
+      "id": "ASSET-02",
+      "name": "Merchant HMAC Secret Keys",
+      "classification": "confidential",
+      "criticalityReason": "Compromise allows forged merchant payment requests"
+    }
+  ],
+  "technologies": [
+    {
+      "name": "next",
+      "vendor": "Vercel",
+      "version": "14",
+      "role": "Frontend Web Application",
+      "confidence": "high"
+    },
+    {
+      "name": "postgresql",
+      "vendor": "PostgreSQL Global Development Group",
+      "version": "15",
+      "role": "Relational Database",
+      "confidence": "high"
+    },
+    {
+      "name": "redis",
+      "vendor": "Redis Ltd.",
+      "version": "7",
+      "role": "Cache and In-Memory Queue",
+      "confidence": "high"
+    },
+    {
+      "name": "gin",
+      "vendor": "Gin-Gonic",
+      "version": null,
+      "role": "Go Web Framework",
+      "confidence": "high"
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "What mechanism enforces tenant isolation within the PostgreSQL database?",
+      "category": "multi_tenancy",
+      "suggestedOptions": [
+        "Row-Level Security (RLS) with tenant_id",
+        "Separate database schema per tenant",
+        "Application-level WHERE tenant_id clauses"
+      ]
+    }
+  ],
+  "assumptions": [
+    "AWS RDS Aurora PostgreSQL is configured with encryption at rest using AWS KMS.",
+    "Internal mTLS certificates are managed via AWS Private CA."
+  ]
+}

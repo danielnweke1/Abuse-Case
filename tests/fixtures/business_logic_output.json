@@ -1,0 +1,90 @@
+{
+  "scenarios": [
+    {
+      "id": "BL-001",
+      "workflow": "Cart Checkout & Coupon Redemption",
+      "title": "Coupon Stacking via Concurrent HTTP Request Race Condition",
+      "abuseCategory": "Race Condition / TOCTOU",
+      "preconditions": [
+        "Authenticated customer session",
+        "Single-use $50 off promotional voucher code 'PROMO-SUMMER50'",
+        "Cart containing items valued at $150"
+      ],
+      "abuseSequence": [
+        "Attacker initializes a cart with $150 of merchandise across session ID sess_abc123.",
+        "Attacker prepares 10 concurrent HTTP POST requests to /api/cart/apply-coupon with identical payload and cookie headers.",
+        "Attacker fires all 10 requests simultaneously within a 5ms window via HTTP/2 multiplexed single-packet connection.",
+        "The backend worker threads concurrently read the coupon state before any thread commits the 'is_redeemed=true' record in PostgreSQL.",
+        "The coupon credit is deducted 6 times against the cart balance, reducing total cart cost to $0 while issuing negative line items."
+      ],
+      "businessImpact": "Severe financial leakage through unauthorized product acquisition and coupon budget exhaustion.",
+      "impactScore": 4,
+      "likelihoodScore": 4,
+      "detectionSignals": [
+        "Multiple POST /api/cart/apply-coupon requests from identical session within 50ms window",
+        "Cart checkout total computed as zero or negative despite positive retail item values",
+        "Audit log anomaly: coupon_redemptions table records multiple entries for single-use coupon ID"
+      ],
+      "mitigations": [
+        "Implement strict row-level database locking ('SELECT ... FOR UPDATE') on coupon state records during transaction validation",
+        "Enforce distributed Redis mutex locks or atomic SETNX keys keyed on `coupon:${couponId}:${userId}` with a 15-second TTL",
+        "Enforce an explicit check constraint in the database preventing cart totals less than minimum allowed order value"
+      ],
+      "pentestTestCase": "```bash\n# Turbo Intruder Race Script (Burp Suite Extension):\ndef queueRequests(target, wordlists):\n    engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=10, requestsPerConnection=10, pipeline=False)\n    req = '''POST /api/cart/apply-coupon HTTP/1.1\\r\\nHost: api.target.local\\r\\nCookie: session=sess_abc123\\r\\nContent-Type: application/json\\r\\n\\r\\n{\"code\": \"PROMO-SUMMER50\"}'''\n    for i in range(15):\n        engine.queue(req, gate='race1')\n    engine.openGate('race1')\n\ndef handleResponse(req, interesting):\n    table.add(req)\n```"
+    },
+    {
+      "id": "BL-002",
+      "workflow": "Multi-Step Order Checkout & Settlement",
+      "title": "Payment Settlement Step Bypass via Direct State Machine Jump",
+      "abuseCategory": "Workflow / State Bypass",
+      "preconditions": [
+        "Authenticated customer account",
+        "Active shopping cart draft initialized at step 1"
+      ],
+      "abuseSequence": [
+        "Attacker creates an order draft via POST /api/orders/create and receives order ID 'ord_778129' in state 'PENDING_PAYMENT'.",
+        "Instead of posting payment token to /api/orders/ord_778129/pay, attacker directly issues POST to /api/orders/ord_778129/confirm.",
+        "The confirmation endpoint fails to check if 'payment_status == PAID' and transitions the order state directly to 'CONFIRMED' and queues warehouse dispatch."
+      ],
+      "businessImpact": "Immediate inventory theft and unfulfilled revenue collection due to shipping un-paid orders.",
+      "impactScore": 5,
+      "likelihoodScore": 3,
+      "detectionSignals": [
+        "Order state change event to 'CONFIRMED' without preceding 'PAYMENT_CAPTURED' webhook or ledger log",
+        "Zero payment gateway authorization ID or transaction reference attached to confirmed order record"
+      ],
+      "mitigations": [
+        "Enforce strict Finite State Machine (FSM) validation: transition to 'CONFIRMED' is rejected by state machine unless state is 'PAYMENT_VERIFIED'",
+        "Require cryptographically signed state transition tokens or server-side session assertions before invoking the fulfillment pipeline"
+      ],
+      "pentestTestCase": "```http\n# Step 1: Create Order\nPOST /api/orders/create HTTP/1.1\nHost: api.target.local\nAuthorization: Bearer <token>\nContent-Type: application/json\n\n{\"cartId\": \"cart_9918\"}\n\n# Step 2: Bypass /api/orders/pay and directly invoke confirmation\nPOST /api/orders/ord_778129/confirm HTTP/1.1\nHost: api.target.local\nAuthorization: Bearer <token>\nContent-Type: application/json\n\n{\"orderId\": \"ord_778129\", \"acknowledgeTerms\": true}\n```"
+    },
+    {
+      "id": "BL-003",
+      "workflow": "Invoice Approval & Disbursement",
+      "title": "Self-Approval and Tenant Organization IDOR in Payment Batch Release",
+      "abuseCategory": "IDOR / Authorization Context Flaw",
+      "preconditions": [
+        "Standard invoice creator role in Tenant Org A"
+      ],
+      "abuseSequence": [
+        "Attacker uploads invoice draft #9021 via POST /api/invoices.",
+        "Attacker submits invoice to approval queue via POST /api/invoices/9021/submit.",
+        "Attacker intercepts the approval request and substitutes their own session token while calling PATCH /api/invoices/9021/approve, modifying 'approverOrgId' to match Tenant Org B.",
+        "The authorization handler checks role presence ('is_manager') without scoping validation to whether the manager belongs to the organization owning invoice #9021."
+      ],
+      "businessImpact": "Unauthorized fund disbursement, cross-tenant compliance breach, and fraudulent vendor payouts.",
+      "impactScore": 5,
+      "likelihoodScore": 3,
+      "detectionSignals": [
+        "Approver user ID and creator user ID belong to conflicting tenant organizations in invoice audit log",
+        "Disbursement approvals originating from IP addresses unassociated with the designated finance manager"
+      ],
+      "mitigations": [
+        "Enforce tenant-scoped database queries with composite keys `WHERE id = ? AND org_id = ?`",
+        "Implement mandatory separation of duties (SoD) rule preventing the creator user ID from matching the approver user ID regardless of role"
+      ],
+      "pentestTestCase": "```bash\ncurl -X PATCH https://api.target.local/api/invoices/9021/approve \\\n  -H 'Authorization: Bearer USER_A_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"status\":\"APPROVED\",\"approvalOverride\":true,\"approverOrgId\":\"org_victim\"}'\n```"
+    }
+  ]
+}

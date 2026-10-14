@@ -1,0 +1,76 @@
+{
+  "threats": [
+    {
+      "id": "STRIDE-001",
+      "title": "Merchant API Key Spoofing via Non-Constant-Time HMAC Verification",
+      "strideCategory": "Spoofing",
+      "affectedElementId": "PROC-02",
+      "affectedElementType": "process",
+      "trustBoundaryId": "BOUNDARY-01",
+      "attackerPrecondition": "Network adversary with the ability to measure API response timing differences",
+      "attackNarrative": "An attacker sends forged HMAC merchant signatures to the Core Payment API. Because string comparison terminates early on mismatched bytes, the attacker measures latency differences over repeated requests to reconstruct valid authentication tokens character-by-character, impersonating legitimate merchants.",
+      "impact": 5,
+      "impactRationale": "Compromise of merchant authentication allows unauthorized transaction settlements.",
+      "likelihood": 2,
+      "likelihoodRationale": "Requires low-jitter network measurements and high request volumes across rate limiters.",
+      "existingControls": [
+        "HMAC-SHA256 signature verification"
+      ],
+      "recommendedMitigations": [
+        "Use crypto/subtle.ConstantTimeCompare in Go Gin handler",
+        "Enforce replay nonce and reject timestamp skews greater than 300 seconds"
+      ],
+      "cweIds": [
+        "CWE-287",
+        "CWE-208"
+      ],
+      "capecIds": [
+        "CAPEC-115"
+      ],
+      "asvsIds": [
+        "V2.1.1",
+        "V3.1.1"
+      ],
+      "mitreAttackIds": [
+        "T1190"
+      ],
+      "confidence": "high",
+      "basis": "stated"
+    },
+    {
+      "id": "STRIDE-002",
+      "title": "Payment Token Tampering via Unsigned Webhook Payload Injection",
+      "strideCategory": "Tampering",
+      "affectedElementId": "FLOW-01",
+      "affectedElementType": "dataFlow",
+      "trustBoundaryId": "BOUNDARY-01",
+      "attackerPrecondition": "Adversary positioned to intercept or proxy webhook traffic",
+      "attackNarrative": "An attacker tampers with transaction amount parameters in transit between the merchant client and the payment gateway edge. Without cryptographic integrity checks on the payload, the backend records the lower modified amount while clearing the original goods.",
+      "impact": 4,
+      "impactRationale": "Financial loss through price manipulation and fraudulent transaction settlement.",
+      "likelihood": 2,
+      "likelihoodRationale": "Mitigated by mandatory TLS transport unless client trust store is compromised.",
+      "existingControls": [
+        "HTTPS / TLS transport"
+      ],
+      "recommendedMitigations": [
+        "Digitally sign webhook payloads using ECDSA or HMAC with symmetric secret",
+        "Verify merchant signature headers prior to processing payload bodies"
+      ],
+      "cweIds": [
+        "CWE-345"
+      ],
+      "capecIds": [
+        "CAPEC-461"
+      ],
+      "asvsIds": [
+        "V10.1.1"
+      ],
+      "mitreAttackIds": [
+        "T1557"
+      ],
+      "confidence": "high",
+      "basis": "inferred"
+    }
+  ]
+}
